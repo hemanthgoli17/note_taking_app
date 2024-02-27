@@ -5,17 +5,18 @@ app = Flask(__name__)
 
 notes = []
 
-@app.route('/')
+@app.route('/', methods = ["GET", "POST"])
 def index():
-    load_notes()
-    return render_template("home.html", notes = notes)
-
-@app.route('/add_note', methods = ["POST"])
-def add_note():
-    note_text = request.form["note"]
-    notes.append({'text' : note_text})
-    save_notes()
-    return index()
+    if request.method == "GET":
+        load_notes()
+        return render_template("home.html", notes = notes)
+    
+    if request.method == "POST":
+        note_text = request.form.get("note")
+        if note_text:
+            notes.append({'text' : note_text})
+            save_notes()
+            return redirect(url_for('index'))
 
 def load_notes():
     global notes
